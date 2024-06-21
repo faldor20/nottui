@@ -2,6 +2,7 @@ open Nottui
 
 (* Put the UI here *)
 
+
 (*let node title ~f =
   let vopened = Lwd.var false in
   let label =
@@ -43,7 +44,7 @@ let farenheit_text =
         if d = d' then f else (string_of_float (c_to_f d), 0))
 
 let farenheit_edit =
-  Nottui_widgets.edit_field
+  W.edit_field
     farenheit_text
     ~on_change:(fun (text, _ as state) ->
         let d = match float_of_string_opt text with
@@ -61,7 +62,7 @@ let celsius_text =
     ~f:(fun d (d', f) -> if d = d' then f else (string_of_float d, 0))
 
 let celsius_edit =
-  Nottui_widgets.edit_field
+  W.edit_field
     celsius_text
     ~on_change:(fun (text, _ as state) ->
         let d = match float_of_string_opt text with
@@ -74,9 +75,9 @@ let celsius_edit =
 
 let root =
   Lwd_utils.pack Ui.pack_y [
-    Lwd.pure (Nottui_widgets.string "Celsius:");
+    Lwd.pure (W.string "Celsius:");
     celsius_edit;
-    Lwd.pure (Nottui_widgets.string "Farenheight:");
+    Lwd.pure (W.string "Farenheight:");
     farenheit_edit;
   ]
 
@@ -94,6 +95,6 @@ let root =
     root; root; root; root; root; root;
   ]
 
-let root = Nottui_widgets.scrollbox root
+let root = W.Old.scrollbox root
 
 let () = Ui_loop.run ~tick_period:0.2 root

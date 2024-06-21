@@ -1,5 +1,5 @@
 open Nottui
-open Nottui_widgets
+
 
 let is_double_click =
   let k = ref 0 in
@@ -22,12 +22,12 @@ let remember_width ~wref ui =
 
 let rec dir ?(initial_path = []) ?after_width:(wref = ref 0) path =
   let column = Lwd.var (Lwd.return Ui.empty) in
-  let header = string ~attr:Notty.(A.bg A.green) (Filename.basename path) in
+  let header = W.string ~attr:Notty.(A.bg A.green) (Filename.basename path) in
   let after = Lwd.var (Lwd.return Ui.empty) in
   let directories = Lwd_table.make () in
   let files = Lwd_table.make () in
   let body =
-    Nottui_widgets.scroll_area
+    W.Scroll.area
       (Lwd_utils.pack Ui.pack_y
          [
            Lwd_table.reduce Ui.pack_y directories;
@@ -58,9 +58,9 @@ let rec dir ?(initial_path = []) ?after_width:(wref = ref 0) path =
     let t =
       try dir ?initial_path ~after_width (Filename.concat path name)
       with exn ->
-        Lwd.return (string ~attr:Notty.(A.bg A.red) (Printexc.to_string exn))
+        Lwd.return (W.string ~attr:Notty.(A.bg A.red) (Printexc.to_string exn))
     in
-    Lwd.set after (Lwd.map ~f:(Ui.join_x (string " ")) t)
+    Lwd.set after (Lwd.map ~f:(Ui.join_x (W.string " ")) t)
   in
   let highlighted_cell = ref None in
   let rec render_directory ?(highlight = false) cell name =
@@ -76,7 +76,7 @@ let rec dir ?(initial_path = []) ?after_width:(wref = ref 0) path =
                render_directory ~highlight:true cell name;
                goto name;
                `Handled | _ -> `Unhandled)
-         (string
+         (W.string
             ~attr:Notty.(A.bg (if highlight then A.lightblue else A.blue))
             name)
   in
@@ -100,7 +100,7 @@ let rec dir ?(initial_path = []) ?after_width:(wref = ref 0) path =
                        ^ Filename.quote (Filename.concat path name) )
                      : int );
                `Handled | _ -> `Unhandled)
-         (string name)
+         (W.string name)
   in
   let entries = Sys.readdir path in
   Array.sort String.compare entries;
@@ -112,7 +112,7 @@ let rec dir ?(initial_path = []) ?after_width:(wref = ref 0) path =
         let text =
           match exn with Sys_error _ -> name | exn -> Printexc.to_string exn
         in
-        Lwd_table.append' files (string ~attr:Notty.(A.bg A.red) text))
+        Lwd_table.append' files (W.string ~attr:Notty.(A.bg A.red) text))
     entries;
   (match initial_path with [] -> () | x :: xs -> goto ~initial_path:xs x);
   Lwd.join (Lwd.get column)
@@ -130,12 +130,12 @@ let () =
     List.rev (split (Sys.getcwd ()))
   in
   let body = Lwd.var (Lwd.pure Ui.empty) in
-  let wm = Nottui_widgets.window_manager (Lwd.join (Lwd.get body)) in
+  let wm = W.Old.window_manager (Lwd.join (Lwd.get body)) in
   let ui = Lwd_utils.pack Ui.pack_y [
-      main_menu_item wm "Quit" (fun () -> exit 0);
+      W.Old.main_menu_item wm "Quit" (fun () -> exit 0);
       dir ~initial_path "/"
     ]
   in
   Lwd.set body (Lwd.map ~f:(Ui.resize ~pad:gravity_pad ~crop:gravity_crop) ui);
-  Ui_loop.run (Nottui_widgets.window_manager_view wm)
+  Ui_loop.run (W.Old.window_manager_view wm)
 

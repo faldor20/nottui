@@ -143,9 +143,16 @@ val quick_sample : 'a root -> 'a
 val quick_release : 'a root -> unit
 
 module Infix : sig
+
+  (** Lwd map operaor*)
   val (>|=) : 'a t -> ('a -> 'b) -> 'b t
+
+  (** Lwd bind operaor*)
   val (>>=) : 'a t -> ('a -> 'b t) -> 'b t
+
+  (** Lwd application operator *)
   val (<*>) : ('a -> 'b) t -> 'a t -> 'b t
+
 end
 
 (* For debug purposes *)

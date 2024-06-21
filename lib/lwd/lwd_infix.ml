@@ -6,3 +6,7 @@ let (let$*) : 'a Lwd.t -> ('a -> 'b Lwd.t) -> 'b Lwd.t = Lwd.Infix.(>>=)
 
 let ($=) : 'a Lwd.var -> 'a -> unit = Lwd.set
 let ($<-) : 'a Lwd_table.row -> 'a -> unit = Lwd_table.set
+
+let ( |>$ ) v f = Lwd.map ~f v
+let ( >> ) f g x = g (f x)
+

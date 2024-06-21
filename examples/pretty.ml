@@ -1,23 +1,23 @@
 open Nottui
 module P = Nottui_pretty
 
-let string ?attr text = P.ui (Nottui_widgets.string ?attr text)
+let string ?attr text = P.ui (W.string ?attr text)
 
 let (^^) = P.(^^)
 let (^/^) a b = P.(a ^^ break 1 ^^ b)
 
-let base = Lwd.var Nottui_widgets.empty_lwd
+let base = Lwd.var W.empty_lwd
 
-let wm = Nottui_widgets.window_manager (Lwd.join (Lwd.get base))
+let wm = W.Old.window_manager (Lwd.join (Lwd.get base))
 
 let spring = P.ui (Ui.resize ~sw:1 Ui.empty)
 
 let selector text f choices =
-  Nottui_widgets.main_menu_item wm text (fun () ->
+  W.Old.main_menu_item wm text (fun () ->
       Lwd.pure @@ Ui.vcat (
         List.map
           (fun choice ->
-             Nottui_widgets.sub_entry choice (fun () -> f choice))
+             W.Old.sub_entry choice (fun () -> f choice))
           choices
       )
     )
@@ -70,8 +70,8 @@ let contents width = Lwd.map2 ~f:P.pretty width doc
 
 let () =
   Lwd.set base (
-    Nottui_widgets.h_pane
-      (Nottui_widgets.scroll_area (varying_width contents))
+    W.h_pane
+      (W.Scroll.area (varying_width contents))
       (Lwd.pure Ui.empty)
   );
-  Ui_loop.run (Nottui_widgets.window_manager_view wm)
+  Ui_loop.run (W.Old.window_manager_view wm)

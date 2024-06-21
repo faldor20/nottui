@@ -1,17 +1,17 @@
 open Nottui
-open Nottui_widgets
+
 
 (* App-specific widgets *)
 
 let simple_edit x =
   let var = Lwd.var (x, 0) in
-  edit_field (Lwd.get var) ~on_change:(Lwd.set var) ~on_submit:ignore
+  W.edit_field (Lwd.get var) ~on_change:(Lwd.set var) ~on_submit:ignore
 
 let strict_table () =
   let columns = Lwd_table.make () in
   for colidx = 0 to 99 do
     let rows = Lwd_table.make () in
-    Lwd_table.append' rows (printf "Column %d" colidx |> Lwd.pure);
+    Lwd_table.append' rows (W.printf "Column %d" colidx |> Lwd.pure);
     for rowidx = 0 to 99 do
       Lwd_table.append' rows
         (simple_edit (Printf.sprintf "Test-%03d-%03d" colidx rowidx))
@@ -20,9 +20,9 @@ let strict_table () =
       ( rows
         |> Lwd_table.reduce (Lwd_utils.lift_monoid Ui.pack_y)
         |> Lwd.join );
-    Lwd_table.append' columns (Lwd.return (string " "))
+    Lwd_table.append' columns (Lwd.return (W.string " "))
   done;
-  scroll_area
+  W.Scroll.area
   @@ Lwd.join (Lwd_table.reduce (Lwd_utils.lift_monoid Ui.pack_x) columns)
 
 (*let lazy_table t =
@@ -81,7 +81,7 @@ let strict_table () =
     else lazy_table body;
   in
   view_menu ()
-*)
+ *)
 
 (* Entry point *)
 
@@ -90,12 +90,13 @@ let top = Lwd.var (Lwd.return Ui.empty)
 let bot = Lwd.var (Lwd.return Ui.empty)
 
 let wm =
-  Nottui_widgets.window_manager @@
+  W.Old.window_manager @@
   Lwd_utils.pack Ui.pack_y [ Lwd.join (Lwd.get top); Lwd.join (Lwd.get bot) ]
 
 (*let () = Statmemprof_emacs.start 1E-4 30 5*)
 
 let () =
+  let open W.Old in
   Lwd.set top @@
   Lwd_utils.pack Ui.pack_x
     [
@@ -114,18 +115,18 @@ let () =
               Lwd.return @@ sub_entry "Quit" (fun () -> raise Exit);
             ]);
       main_menu_item wm "View" (fun _ ->
-          Lwd.set bot (Lwd.return (string "<View>"));
+          Lwd.set bot (Lwd.return (W.string "<View>"));
           Lwd.return Ui.empty);
       main_menu_item wm "Edit" (fun _ ->
-          Lwd.set bot (Lwd.return (string "<Edit>"));
+          Lwd.set bot (Lwd.return (W.string "<Edit>"));
           Lwd.return Ui.empty);
     ];
   Lwd.set bot @@
   Lwd_utils.pack Ui.pack_y
     [
       simple_edit "Hello world";
-      v_pane (strict_table ()) (Lwd.return @@ string "B");
-      h_pane (Lwd.return (string "A")) (Lwd.return (string "B"));
+      W.v_pane (strict_table ()) (Lwd.return @@ W.string "B");
+      W.h_pane (Lwd.return (W.string "A")) (Lwd.return (W.string "B"));
     ];
   try Ui_loop.run ~tick_period:0.2 (window_manager_view wm)
   with Exit -> ()

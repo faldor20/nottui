@@ -1,5 +1,5 @@
 open Nottui
-open Nottui_widgets
+
 
 (* App-specific widgets *)
 
@@ -11,14 +11,14 @@ let strict_table () =
         Lwd_table.append' columns rows;
         Array.init 100 (fun _ -> Lwd_table.append rows ~set:0))
   in
-  let render_cell _ v = string (string_of_int v) in
+  let render_cell _ v = W.string (string_of_int v) in
   let render_column _ rows = Lwd_table.map_reduce render_cell Ui.pack_y rows in
   let table =
     Lwd_table.map_reduce render_column
       (Lwd_utils.lift_monoid Ui.pack_x)
       columns
   in
-  (cells, Lwd.join table |> scroll_area)
+  (cells, Lwd.join table |> W.Scroll.area)
 
 (* Entry point *)
 

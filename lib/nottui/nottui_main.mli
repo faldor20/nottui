@@ -50,6 +50,13 @@ sig
       - the result can evolve over time, parties can join or leave, or bid
         "more".
   *)
+
+  val request_reversable : handle -> unit
+  (** Request the focus and add to the focus stack *)
+
+  val release_reversable : handle -> unit
+  (** Release the focus (if the handle has it) and restore the last focus on the stack *)
+
 end
 
 (** {1 Gravity (horizontal and vertical alignments)} *)
@@ -110,7 +117,7 @@ sig
 
   (** {1 Layout specifications} *)
 
-  type layout_spec = { w : int; h : int; sw : int; sh : int; }
+  type layout_spec = { w : int; h : int; sw : int; sh : int ; mw : int; mh : int}
   (** The type of layout specifications.
 
       For each axis, layout is specified as a pair of integers:
@@ -137,6 +144,12 @@ sig
   val layout_stretch_height : t -> int
   (** Get the layout height strength of an UI element *)
 
+  val layout_max_width :t ->int
+  (** Get the layout max_width of an UI element *)
+
+  val layout_max_height  :t ->int
+  (** Get the layout max_height of an UI element *)
+
   (** {1 Primitive images} *)
 
   val empty : t
@@ -151,13 +164,10 @@ sig
 
   (** {1 Event handles} *)
 
-  type may_handle = [ `Unhandled | `Handled ]
-  (** An event is propagated until it gets handled.
-      Handler functions return a value of type [may_handle] to indicate
-      whether the event was handled or not. *)
 
   type mouse_handler = x:int -> y:int -> Unescape.button -> [
-      | may_handle
+      | `Handled
+      |`Unhandled
       | `Grab of (x:int -> y:int -> unit) * (x:int -> y:int -> unit)
     ]
   (** The type of handlers for mouse events. They receive the (absolute)
@@ -179,7 +189,7 @@ sig
     | `Copy
     | `Paste
     (* Focus management *)
-    | `Focus of [`Next | `Prev | `Left | `Right | `Up | `Down]
+    | `Focus of [`Out|`Next | `Prev | `Left | `Right | `Up | `Down]
   ]
   (** Key handlers normally reacts to keyboard input but a few special keys are
       defined to represent higher-level actions.
@@ -189,6 +199,11 @@ sig
     | Unescape.special | `Uchar of Uchar.t | `ASCII of char | semantic_key
   ] * Unescape.mods
   (** A key is the pair of a main key and a list of modifiers *)
+
+  type may_handle = [ `Unhandled | `Handled| `Remap of key ]
+  (** An event is propagated until it gets handled.
+      Handler functions return a value of type [may_handle] to indicate
+      whether the event was handled, not handled, or should be remapped to aonother event. *)
 
   type mouse = Unescape.mouse
   (** Specification of mouse inputs, taken from Notty *)
@@ -200,7 +215,7 @@ sig
   (** Handle mouse events that happens over an ui. *)
 
   val keyboard_area : ?focus:Focus.status -> (key -> may_handle) -> t -> t
-  (** Define a focus receiver, handle keyboard events over the focused area *)
+  (** Define a focus receiver, handle keyboard events over the focused area. Distinct from [event_filter] because [`Focus *] events will move focus between these areas *)
 
   val has_focus : t -> bool
   (** Check if this UI has focus, either directly (it is a focused
@@ -245,8 +260,8 @@ sig
   (** {1 Composite images} *)
 
   val resize :
-    ?w:int -> ?h:int -> ?sw:int -> ?sh:int ->
-    ?pad:Gravity.t -> ?crop:Gravity.t -> ?bg:attr -> t -> t
+    ?w:int -> ?h:int -> ?sw:int -> ?sh:int ->  ?mw:int ->
+?mh:int ->    ?pad:Gravity.t -> ?crop:Gravity.t -> ?bg:attr -> t -> t
   (** Override the layout specification of an image with provided [w], [h],
       [sw] or [sh].
 

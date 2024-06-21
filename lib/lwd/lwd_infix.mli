@@ -14,3 +14,10 @@ val ($=) : 'a Lwd.var -> 'a -> unit
 
 val ($<-) : 'a Lwd_table.row -> 'a -> unit
 (** Infix alias to {!Lwd_table.set} *)
+
+val ( |>$ ):'a Lwd.t -> ('a -> 'b) -> 'b Lwd.t 
+(** Used to pipe with Lwd.map *)
+
+val ( >> ):('a -> 'b) -> ('b -> 'c) -> 'a -> 'c
+(** Function composition operator *)
+
