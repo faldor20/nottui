@@ -52,11 +52,11 @@ let border_box_intern
   ?(border_attr = A.empty)
   ?(label_top = I.empty)
   ?(label_bottom = I.empty)
-  w
-  h
-  pad
-  pad_w
-  pad_h
+  ~w
+  ~h
+  ~pad
+  ~pad_w
+  ~pad_h
   input
   =
   (*can't go below 1 internal width or things get weird*)
@@ -126,11 +126,11 @@ let with_border_attr
       ?label_top:(label_top |> Option.map (make_label (w - 2)))
       ?label_bottom:(label_bottom |> Option.map (make_label (w - 2)))
       (* ~label_bottom:(if has_focus then I.strf "focused" else I.strf "unfocused") *)
-      w
-      h
-      pad
-      pad_w
-      pad_h
+      ~w
+      ~h
+      ~pad
+      ~pad_w
+      ~pad_h
       input
   in
   (*If we want the input to be shrinkable we make it expandable, set it's width to something small and then set a max width for the whole box*)
@@ -212,4 +212,37 @@ let box
     ?label_bottom
     (border_attr |> Lwd.pure)
     input
+;;
+(** Creates a bordered box around the given [input]. The input must have a static sive ans this doesn't adjust the s .
+    @param scaling
+      Controls how the input widget is sized within the border box. Can be:
+      - [`Static] - The input widget is not resized.
+      - [`Expand sw] - The input widget is allowed to expand to fill the available space, with a stretch width [sw].
+      - [`Shrinkable (min_width, sw)] - The input widget is allowed to shrink to a minimum width of [min_width], and expand with a stretch width [sw].
+    @param pad The padding around the input widget within the border box.
+    @param pad_w The horizontal padding around the input widget.
+    @param pad_h The vertical padding around the input widget.
+    @param label An optional label to display within the border box.
+    @param input The input widget to be bordered.
+    @param border_attr Style for the border, defaults to [A.empty]. *)
+let static
+  ?(pad = neutral_grav)
+  ?(pad_w = 2)
+  ?(pad_h = 1)
+  ?label_top
+  ?label_bottom
+  ?(border_attr = A.empty)
+  ui
+  =
+  let Ui.{w;h;_}=Ui.layout_spec ui in
+  Internal.border_box_intern
+  ~w 
+  ~h
+    ~pad
+    ~pad_w
+    ~pad_h
+    ?label_top
+    ?label_bottom
+    ~border_attr:border_attr 
+    ui
 ;;

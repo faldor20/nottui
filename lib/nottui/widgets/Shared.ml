@@ -164,4 +164,17 @@ let intersperse t ~sep =
 ;;
 end
 
+(** [on_focus f ui]
+
+    Transforms the Ui with function [f] if the Ui is focused *)
+let on_ui_focus f ui = if ui |> Ui.has_focus then ui |> f else ui
+
+let on_focus ~focus f ui =
+  Lwd.map2 ui (focus |> Focus.status) ~f:(fun ui focus ->
+    if focus |> Focus.has_focus then ui |> f else ui)
+;;
+
+let is_focused ~focus f ui =
+  Lwd.map2 ui (focus |> Focus.status) ~f:(fun ui focus -> f ui (focus |> Focus.has_focus))
+;;
 
