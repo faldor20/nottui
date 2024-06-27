@@ -1,0 +1,10 @@
+(executable
+ (name hackernews)
+ (modes byte exe)
+ (ocamlopt_flags
+ (-inline 0)
+ (-inline-toplevel 0)
+ (-Oclassic)
+ )
+ (libraries notty notty.unix nottui))
+
