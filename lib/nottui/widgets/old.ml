@@ -59,7 +59,7 @@ let menu_overlay wm g ?(dx = 0) ?(dy = 0) body around =
                 Lwd_table.remove row;
                 `Handled
               | _ -> `Handled)
-            (Ui.resize ~sw:1 ~sh:1 Ui.empty)
+            (Ui.resize ~sw:1 ~sh:1 ~mw:1000 ~mh:1000 Ui.empty)
         in
         Ui.join_z catchall @@ Ui.join_y v_pad @@ Ui.join_x h_pad @@ Ui.join_z bg body)
     in

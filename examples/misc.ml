@@ -91,7 +91,7 @@ let bot = Lwd.var (Lwd.return Ui.empty)
 
 let wm =
   W.Old.window_manager @@
-  Lwd_utils.pack Ui.pack_y [ Lwd.join (Lwd.get top); Lwd.join (Lwd.get bot) ]
+  W.vbox [ Lwd.join (Lwd.get top); Lwd.join (Lwd.get bot) ]
 
 (*let () = Statmemprof_emacs.start 1E-4 30 5*)
 
@@ -101,12 +101,12 @@ let () =
   Lwd_utils.pack Ui.pack_x
     [
       main_menu_item wm "File" (fun () ->
-          Lwd_utils.pack Ui.pack_y
+          W.vbox
             [
               Lwd.return @@ sub_entry "New" ignore;
               Lwd.return @@ sub_entry "Open" ignore;
               sub_menu_item wm "Recent" (fun () ->
-                  Lwd_utils.pack Ui.pack_y
+                  W.vbox
                     [
                       Lwd.return @@ sub_entry "A" ignore;
                       Lwd.return @@ sub_entry "B" ignore;
@@ -122,7 +122,7 @@ let () =
           Lwd.return Ui.empty);
     ];
   Lwd.set bot @@
-  Lwd_utils.pack Ui.pack_y
+  W.vbox
     [
       simple_edit "Hello world";
       W.v_pane (strict_table ()) (Lwd.return @@ W.string "B");
