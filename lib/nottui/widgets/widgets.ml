@@ -6,7 +6,7 @@ include Nottui_widgets
 module Old = Old
 module Wip = Wip
 module Box = Border_box
-module Overaly = Overlays
+module Overlay = Overlays
 module Scroll = Scroll
 
 module Lists = struct

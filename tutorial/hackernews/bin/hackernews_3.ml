@@ -48,11 +48,11 @@ let show_prompt_var = None |> Lwd.var
 let sorting_mode_var = Lwd.var `Points
 
 let sorting_prompt ui =
-  let open W.Overaly in
+  let open W.Overlay in
   let open W.Lists in
   let res =
     ui
-    |> W.Overaly.selection_list_prompt
+    |> W.Overlay.selection_list_prompt
          ~modify_body:(Lwd.map ~f:(Ui.resize ~sw:1 ~mw:20))
          ~show_prompt_var
     |>$ Ui.keyboard_area (function

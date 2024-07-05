@@ -54,6 +54,12 @@
                 ocaml
                 ocamlformat
 
+                re
+                iter
+                base
+                angstrom
+                ppx_let
+
                 notty
                 ppx_inline_test
                 ppx_assert
