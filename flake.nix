@@ -13,7 +13,7 @@
     };
   };
   # Flake outputs
-  outputs = { self, nixpkgs, flake-parts, ocaml-overlay, ... }@inputs:
+    outputs = { self, nixpkgs, flake-parts, ocaml-overlay, ... }@inputs:
 
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems =
@@ -53,7 +53,11 @@
                 utop
                 ocaml
                 ocamlformat
+
                 notty
+                ppx_inline_test
+                ppx_assert
+                seq
 
 
 
