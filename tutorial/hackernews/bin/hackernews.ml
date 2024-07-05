@@ -198,23 +198,22 @@ let main_ui =
   let comments_focus = Focus.make () in
   W.vbox
     [ W.hbox
-        [ (let _post = Lwd.get selected_post_var in
-           (* "hi"|>W.string|>Lwd.pure *)
-           Comments.comments_view ~focus:comments_focus _post)
-        ; posts
+        [ posts
           |> W.Box.box ~pad_w:1 ~pad_h:0
           |>$ Ui.keyboard_area (function
             | `Enter, [] ->
               Focus.request_reversable comments_focus;
               `Handled
             | _ -> `Unhandled)
+        ; (let _post = Lwd.get selected_post_var in
+           (* "hi"|>W.string|>Lwd.pure *)
+           Comments.comments_view ~focus:comments_focus _post)
+
         ]
-    ; shortcuts |> Ui.resize ~sw:1 ~mw:10000 |> Lwd.pure |> W.Box.box ~pad_w:1 ~pad_h:0
+    ; shortcuts 
+    |> Ui.resize ~sw:1 ~mw:10000 |> Lwd.pure |> W.Box.box ~pad_w:1 ~pad_h:0
     ]
   |> sorting_prompt
 ;;
 
-let () =
-  let _ = main_ui in
-  Nottui.Ui_loop.run ~quit_on_escape:false Focus_test.main
-;;
+let () = Nottui.Ui_loop.run ~quit_on_escape:false main_ui
