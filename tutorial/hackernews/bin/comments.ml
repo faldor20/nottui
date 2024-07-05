@@ -85,7 +85,7 @@ let comments_view ?(focus = Focus.make ()) (post : post option Lwd.t) : ui Lwd.t
   | Some post ->
     let children = post.kids |> List.map (Hackernews_api.generate_fake_comment post.id) in
     (*We are using a list instead of just one variable becasue we want to be able to "undo" if we open a child comment.
-     Opening a child comment means appending that comment to the list and going back to it's parent means removing the head of the list*)
+      Opening a child comment means appending that comment to the list and going back to it's parent means removing the head of the list*)
     let comment_var = [ None, children ] |> Lwd.var in
     comment_var |> comment_children_view ~focus
 ;;
