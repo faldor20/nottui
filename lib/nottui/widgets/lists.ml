@@ -2,16 +2,12 @@ open Nottui_main
 open Shared
 open Lwd_infix
 
-(* Displays a list of ui items. If you want the items to be selectable, look at selection_list *)
 let vlist ?(bullet = "- ") (l : Ui.t Lwd.t list) : Ui.t Lwd.t =
   l
   |> List.map (fun ui -> Lwd.map ~f:(Ui.join_x (string bullet)) ui)
   |> Lwd_utils.pack Ui.pack_y
 ;;
 
-
-
-(* Displays a list of something that can be transformed into ui can be filtered. Simmilar to selection_list_filterable *)
 let vlist_with
   ?(bullet = "- ")
   ?(filter = Lwd.return (fun _ -> true))

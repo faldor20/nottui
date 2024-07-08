@@ -1,18 +1,14 @@
-(**
-Border box. Surrounds a Ui element in a border that can have labels, or appear when focused
-*)
+(** Border box. Surrounds a Ui element in a border that can have labels, or appear when focused *)
 
 open Notty
 open Nottui_main
 open Lwd_infix
 
 (*------ Internal/Private----*)
-module Internal= struct
-
-let neutral_grav = Gravity.make ~h:`Neutral ~v:`Neutral
+module Internal = struct
+  let neutral_grav = Gravity.make ~h:`Neutral ~v:`Neutral
 
   module W = Nottui_widgets
-
 
   (** Truncate a string to a given length, adding an ellipsis if truncated. *)
   let truncate_string len str =
@@ -47,54 +43,49 @@ let neutral_grav = Gravity.make ~h:`Neutral ~v:`Neutral
     I.strf " %s " (truncate_string (max_width - 2) label_str)
   ;;
 
-(** Internal function for rendering a border box with known dimensions and padding.*)
-let border_box_intern
-  ?(border_attr = A.empty)
-  ?(label_top = I.empty)
-  ?(label_bottom = I.empty)
-  ~w
-  ~h
-  ~pad
-  ~pad_w
-  ~pad_h
-  input
-  =
-  (*can't go below 1 internal width or things get weird*)
-  let h = if pad_h < 1 then Int.max h 1 else h in
-  let w = if pad_w < 1 then Int.max w 1 else w in
-  (* this is a weird quirk, but we have to be careful of runaway size expansion.
-     If we increase the width of the space by making the vbar longer than the input ui element it will be able to expand to fill that space.
-     That will then increase the vbar and increase the height etc etc untill the max height is reached*)
-  let vbar =
-    I.uchar border_attr (Uchar.of_int 0x2502) 1 (h + (pad_h * 2))
-    |> Ui.atom
-    |> Ui.resize ~h:0
-  in
-  Ui.vcat
-    [
-      outline_top border_attr w label_top |> Ui.atom |> Ui.resize ~w:0
-    ; Ui.hcat
-        [
-          vbar
-        ; I.void pad_w 1 |> Ui.atom
-        ; Ui.vcat
-            [
-              I.void 1 pad_h |> Ui.atom
-            ; input |> Ui.resize ~pad
-            ; I.void 1 pad_h |> Ui.atom
-            ]
-        ; I.void pad_w 1 |> Ui.atom
-        ; vbar
-        ]
-    ; outline_bot border_attr w label_bottom |> Ui.atom |> Ui.resize ~w:0
-    ]
-;;
-
+  (** Internal function for rendering a border box with known dimensions and padding.*)
+  let border_box_intern
+    ?(border_attr = A.empty)
+    ?(label_top = I.empty)
+    ?(label_bottom = I.empty)
+    ~w
+    ~h
+    ~pad
+    ~pad_w
+    ~pad_h
+    input
+    =
+    (*can't go below 1 internal width or things get weird*)
+    let h = if pad_h < 1 then Int.max h 1 else h in
+    let w = if pad_w < 1 then Int.max w 1 else w in
+    (* this is a weird quirk, but we have to be careful of runaway size expansion.
+       If we increase the width of the space by making the vbar longer than the input ui element it will be able to expand to fill that space.
+       That will then increase the vbar and increase the height etc etc untill the max height is reached*)
+    let vbar =
+      I.uchar border_attr (Uchar.of_int 0x2502) 1 (h + (pad_h * 2))
+      |> Ui.atom
+      |> Ui.resize ~h:0
+    in
+    Ui.vcat
+      [ outline_top border_attr w label_top |> Ui.atom |> Ui.resize ~w:0
+      ; Ui.hcat
+          [ vbar
+          ; I.void pad_w 1 |> Ui.atom
+          ; Ui.vcat
+              [ I.void 1 pad_h |> Ui.atom
+              ; input |> Ui.resize ~pad
+              ; I.void 1 pad_h |> Ui.atom
+              ]
+          ; I.void pad_w 1 |> Ui.atom
+          ; vbar
+          ]
+      ; outline_bot border_attr w label_bottom |> Ui.atom |> Ui.resize ~w:0
+      ]
+  ;;
 end
+
 open Internal
 
-
-(** A border box that allows setting the border style from an [Lwd.t] prefer [Border_box.focusable] or [Border_box.box] unless you need this  *)
 let with_border_attr
   ?(pad = neutral_grav)
   ?(pad_w = 2)
@@ -107,7 +98,7 @@ let with_border_attr
   let size = Lwd.var (0, 0) in
   let layout_width = Lwd.var 0 in
   let input =
-    let$ input = input  in
+    let$ input = input in
     (*We need this later to determine the max with*)
     layout_width $= (input |> Ui.layout_width);
     input
@@ -125,7 +116,7 @@ let with_border_attr
       ~border_attr
       ?label_top:(label_top |> Option.map (make_label (w - 2)))
       ?label_bottom:(label_bottom |> Option.map (make_label (w - 2)))
-      (* ~label_bottom:(if has_focus then I.strf "focused" else I.strf "unfocused") *)
+        (* ~label_bottom:(if has_focus then I.strf "focused" else I.strf "unfocused") *)
       ~w
       ~h
       ~pad
@@ -137,24 +128,6 @@ let with_border_attr
   bbox
 ;;
 
-
-(** Creates a bordered box around the given [input] widget. This box will change colour when focused
-
-    @param scaling
-      Controls how the input widget is sized within the border box. Can be:
-      - [`Static] - The input widget is not resized.
-      - [`Expand sw] - The input widget is allowed to expand to fill the available space, with a stretch width [sw].
-      - [`Shrinkable (min_width, sw)] - The input widget is allowed to shrink to a minimum width of [min_width], and expand with a stretch width [sw].
-    @param pad The padding around the input widget within the border box.
-    @param pad_w The horizontal padding around the input widget.
-    @param pad_h The vertical padding around the input widget.
-    @param label An optional label to display within the border box.
-    @param input The input widget to be bordered.
-    @param border_attr Style for the border, defaults to [A.empty].
-    @param focus Focus handle for the box .
-    @param focus_attr Style for the border when focused, defaults to [A.fg A.blue].
-    @param on_key
-      Callback called when a key is pressed while the box is focused. Useful for performing actions when the box is selected . *)
 let focusable
   ?pad
   ?pad_w
@@ -183,27 +156,7 @@ let focusable
     input
 ;;
 
-(** Creates a bordered box around the given [input] widget.
-    @param scaling
-      Controls how the input widget is sized within the border box. Can be:
-      - [`Static] - The input widget is not resized.
-      - [`Expand sw] - The input widget is allowed to expand to fill the available space, with a stretch width [sw].
-      - [`Shrinkable (min_width, sw)] - The input widget is allowed to shrink to a minimum width of [min_width], and expand with a stretch width [sw].
-    @param pad The padding around the input widget within the border box.
-    @param pad_w The horizontal padding around the input widget.
-    @param pad_h The vertical padding around the input widget.
-    @param label An optional label to display within the border box.
-    @param input The input widget to be bordered.
-    @param border_attr Style for the border, defaults to [A.empty]. *)
-let box
-  ?pad
-  ?pad_w
-  ?pad_h
-  ?label_top
-  ?label_bottom
-  ?(border_attr = A.empty)
-  input
-  =
+let box ?pad ?pad_w ?pad_h ?label_top ?label_bottom ?(border_attr = A.empty) input =
   with_border_attr
     ?pad
     ?pad_w
@@ -213,18 +166,7 @@ let box
     (border_attr |> Lwd.pure)
     input
 ;;
-(** Creates a bordered box around the given [input]. The input must have a static sive ans this doesn't adjust the s .
-    @param scaling
-      Controls how the input widget is sized within the border box. Can be:
-      - [`Static] - The input widget is not resized.
-      - [`Expand sw] - The input widget is allowed to expand to fill the available space, with a stretch width [sw].
-      - [`Shrinkable (min_width, sw)] - The input widget is allowed to shrink to a minimum width of [min_width], and expand with a stretch width [sw].
-    @param pad The padding around the input widget within the border box.
-    @param pad_w The horizontal padding around the input widget.
-    @param pad_h The vertical padding around the input widget.
-    @param label An optional label to display within the border box.
-    @param input The input widget to be bordered.
-    @param border_attr Style for the border, defaults to [A.empty]. *)
+
 let static
   ?(pad = neutral_grav)
   ?(pad_w = 2)
@@ -234,15 +176,15 @@ let static
   ?(border_attr = A.empty)
   ui
   =
-  let Ui.{w;h;_}=Ui.layout_spec ui in
+  let Ui.{ w; h; _ } = Ui.layout_spec ui in
   Internal.border_box_intern
-  ~w 
-  ~h
+    ~w
+    ~h
     ~pad
     ~pad_w
     ~pad_h
     ?label_top
     ?label_bottom
-    ~border_attr:border_attr 
+    ~border_attr
     ui
 ;;

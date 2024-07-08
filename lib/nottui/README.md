@@ -9,7 +9,20 @@ The package is distributed through opam:
 $ opam install nottui
 ```
 
-Here are a few examples to being using Nottui.
+you might want to 
+
+## Tutorial
+There is a tutorial for nottui which will take you through the basics of making a small application, it covers: 
+- how to do layout 
+- reactive values
+- handling keyboard input 
+- and much more!
+
+See [tutorial](/docs/tutorial/hackernews/bin/tutorial.md)
+
+## Examples
+
+Here are a few examples to being using Nottui
 Let's start with Hello world.
 
 #### Hello world

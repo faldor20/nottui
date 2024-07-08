@@ -1,10 +1,14 @@
-# Using Lwd with Nottui
+## Fundamentals of Lwd as it relates to nottui
 
-## Fundamentals of Lwd in nottui
+Lwd (Lightweight Document) is a library that lets you build values that changes over time and recompute reactively.
+Nottui is a library for building TUI(Terminal User Interface) programs that uses Lwd to make its ui react to changes.
+Notty is a library for interface with the terminal, displaying symbols, colours etc.
 
-Lwd (Lightweight Document) is a reactive programming library that integrates with Nottui for creating dynamic terminal UIs.
+When writing a ui in nottui, you are building a graph of Lwd nodes containing ui elements that each reactively update when their children change. 
+Each "tick" Nottui will use Lwd to resolve the current state of the ui, updating any pieces whos dependencies have changed.
+If the new ui is different it will render it to the terminal using Notty.
 
-### Core Concepts
+### Core functions and tools
 
 #### Lwd.t and Lwd.var
 
