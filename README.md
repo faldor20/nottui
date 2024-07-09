@@ -7,11 +7,6 @@ It is only about interactivity. A bunch of companion libraries make it usable in
 - [Nottui](lib/nottui) renders user interface in the terminal
 - [Nottui-lwt](lib/nottui-lwt) add support for concurrent/asynchronous UI to Nottui 
 - [Nottui-pretty](lib/nottui-pretty) is an interactive pretty-printer (based on [Pprint](https://github.com/fpottier/pprint))
-- [Tyxml-lwd](lib/tyxml-lwd) is a Js_of_ocaml library for making interactive applications, using Lwd for updating the DOM and [Tyxml](https://github.com/ocsigen/tyxml) for writing typesafe HTML Document.
-
-```shell
-$ opam pin add tyxml https://github.com/ocsigen/tyxml.git#wraps
-```
 
 [TOC]
 

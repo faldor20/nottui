@@ -7,8 +7,114 @@ Notty is a library for interface with the terminal, displaying symbols, colours 
 When writing a ui in nottui, you are building a graph of Lwd nodes containing ui elements that each reactively update when their children change. 
 Each "tick" Nottui will use Lwd to resolve the current state of the ui, updating any pieces whos dependencies have changed.
 If the new ui is different it will render it to the terminal using Notty.
+## Core functions within Nottui
 
-### Core functions and tools
+# Key Functions in Nottui
+
+Nottui provides a set of core modules and functions for building terminal user interfaces:
+
+## Ui Module
+- `Ui.atom`: Creates a UI element from a Notty image
+Example:
+
+let hello_world = Ui.atom (Notty.I.string Notty.A.empty "Hello, World!")
+
+
+- `Ui.hcat`, `Ui.vcat`, `Ui.zcat`: Concatenate lists of UI elements
+- `Ui.hcat`: Horizontally concatenates UI elements
+- `Ui.vcat`: Vertically concatenates UI elements
+- `Ui.zcat`: Stacks UI elements on top of each other (z-axis)
+Example:
+```ocaml
+let horizontal_layout = Ui.hcat [
+Ui.atom (Notty.I.string Notty.A.empty "Left");
+Ui.atom (Notty.I.string Notty.A.empty "Right")
+]
+let vertical_layout = Ui.vcat [
+Ui.atom (Notty.I.string Notty.A.empty "Top");
+Ui.atom (Notty.I.string Notty.A.empty "Bottom")
+]
+```
+
+- `Ui.resize`: Adjust layout specifications of a UI element
+Parameters:
+- `?w`: Width (optional)
+- `?h`: Height (optional)
+- `?sw`: Width strategy (optional)
+- `?sh`: Height strategy (optional)
+Example:
+
+let resized_element = Ui.resize ~w:20 ~h:10 (Ui.atom (Notty.I.string Notty.A.empty "Resized"))
+
+
+- `Ui.mouse_area`, `Ui.keyboard_area`: Add event handlers to UI elements
+Example:
+
+let clickable_button = 
+Ui.mouse_area (fun ~x:_ ~y:_ _ -> 
+Printf.printf "Button clicked!\n";
+`Handled
+) (Ui.atom (Notty.I.string Notty.A.empty "Click me"))
+
+let keyboard_input =
+Ui.keyboard_area (fun _ -> 
+Printf.printf "Key pressed!\n";
+`Handled
+) (Ui.atom (Notty.I.string Notty.A.empty "Press any key"))
+
+
+- `Ui.size_sensor`, `Ui.transient_sensor`, `Ui.permanent_sensor`: Observe UI element dimensions
+- `Ui.size_sensor`: Reports size changes of a UI element
+- `Ui.transient_sensor`: Reports size changes only when the element is visible
+- `Ui.permanent_sensor`: Always reports size changes, even when the element is not visible
+Example:
+
+let size_aware_element =
+Ui.size_sensor (fun ~w ~h ->
+Printf.printf "Element size: %dx%d\n" w h;
+Ui.atom (Notty.I.string Notty.A.empty (Printf.sprintf "Size: %dx%d" w h))
+)
+
+
+
+## Ui_loop Module
+
+- `Ui_loop.run`: Starts the loop for running the application
+
+## Examples
+
+1. Hello World:
+ ```
+Ui_loop.run (Lwd.pure (Ui.atom (Notty.I.string A.empty "Hello, World!")))
+ 
+
+2. Button with Click Counter:
+ 
+let count = Lwd.var 0
+let button = 
+Ui.mouse_area (fun ~x:_ ~y:_ _ -> 
+Lwd.set count (Lwd.peek count + 1);
+`Handled)
+(Lwd.map (fun n -> Ui.atom (Notty.I.string A.empty (Printf.sprintf "Clicks: %d" n))) (Lwd.get count))
+ 
+Ui_loop.run (Lwd.pure button)
+ 
+
+3. Simple Layout:
+ 
+let layout = 
+Ui.join_y
+(Ui.atom (Notty.I.string A.empty "Top"))
+(Ui.join_x
+(Ui.atom (Notty.I.string A.empty "Left"))
+(Ui.atom (Notty.I.string A.empty "Right")))
+ 
+Ui_loop.run (Lwd.pure layout)
+ 
+
+These examples demonstrate basic UI creation, event handling, and layout composition using Nottui's core functions.
+
+## Core functions within Lwd
 
 #### Lwd.t and Lwd.var
 
@@ -168,3 +274,4 @@ let make_dynamic_ui () =
 - Use let$* sparingly, only when necessary for conditional logic or complex transformations.
 - Utilize $= for concise Lwd.var updates.
 - Structure your UI to minimize unnecessary recomputations.
+
