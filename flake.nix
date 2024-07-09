@@ -1,6 +1,5 @@
-
 {
-  description = "Example JavaScript development environment for Zero to Nix";
+  description = "Nottui nix flake";
 
   # Flake inputs
   inputs = {
@@ -12,8 +11,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
+
   # Flake outputs
-    outputs = { self, nixpkgs, flake-parts, ocaml-overlay, ... }@inputs:
+  outputs = { self, nixpkgs, flake-parts, ocaml-overlay, ... }@inputs:
 
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems =
@@ -22,20 +22,38 @@
         let
           # OCaml packages available on nixpkgs
           ocamlPackages = pkgs.ocaml-ng.ocamlPackages_5_1;
-          inherit (pkgs) mkShell lib;
-          # package=
-          #      ocamlPackages.buildDunePackage {
-          #       pname = "lwd";
-          #       version = "0.1.0";
-          #       duneVersion = "3";
-          #       src = ./. ;
-          #       buildInputs = with ocamlPackages; [
-              
+          packages = {
+            nottui = ocamlPackages.buildDunePackage {
+              pname = "nottui";
+              version = "0.4.0";
+              duneVersion = "3";
+              src = ./.;
+              buildInputs = with ocamlPackages; [
+                lwd
+                ppx_inline_test
+                ppx_assert
+                notty
+              ];
+              strictDeps = true;
+            };
 
-          #       ];
-
-          #       strictDeps = true;
-          #     };
+            nottui-lwd = ocamlPackages.buildDunePackage {
+              pname = "nottui-lwd";
+              version = "0.4.0";
+              duneVersion = "3";
+              src = ./lib/nottui-lwd/.;
+              buildInputs = with ocamlPackages; [ nottui notty ];
+              strictDeps = true;
+            };
+            nottui-pretty = ocamlPackages.buildDunePackage {
+              pname = "nottui-pretty";
+              version = "0.4.0";
+              duneVersion = "3";
+              src = ./lib/nottui-pretty/.;
+              buildInputs = with ocamlPackages; [ nottui ];
+              strictDeps = true;
+            };
+          };
 
         in {
           _module.args.pkgs = import inputs.nixpkgs {
@@ -43,35 +61,23 @@
             config.allowUnfree = true;
             overlays = [ ocaml-overlay.overlays.default ];
           };
-          # packages = {
-          #   default = package;
-          # };
+          packages = packages;
           devShells = {
-            default = mkShell.override { stdenv = pkgs.gccStdenv; } {
+            default = pkgs.mkShell.override { stdenv = pkgs.gccStdenv; } {
               buildInputs = with ocamlPackages; [
                 dune
                 utop
                 ocaml
                 ocamlformat
 
+                #for tangling
                 re
                 iter
                 base
                 angstrom
                 ppx_let
-
-                notty
-                ppx_inline_test
-                ppx_assert
-                seq
-
-
-
               ];
-              inputsFrom = [ 
-             # self'.packages.default
-            # ocamlPackages.bonsai
-               ];
+              inputsFrom = [ self'.packages.nottui ];
               packages = builtins.attrValues {
                 inherit (pkgs) gcc pkg-config;
                 inherit (ocamlPackages) ocaml-lsp ocamlformat-rpc-lib;

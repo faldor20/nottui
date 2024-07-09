@@ -5,28 +5,22 @@
 (formatting
  (enabled_for dune))
 
-(name lwd)
+(name nottui)
 
 (source
- (github let-def/lwd))
+ (github flador20/nottui))
 
 (license MIT)
 
-(authors "Frédéric Bour")
+(authors 
+"Frédéric Bour"
+"Eli Dowling"
+)
 
-(maintainers "fred@tarides.com")
-
-(package
- (name lwd)
- (synopsis "Lightweight reactive documents")
- (documentation "https://let-def.github.io/lwd/doc")
- (depends
-  dune
-  seq
-  (ocaml
-   (>= "4.03"))
-  (qtest :with-test)
-  (qcheck :with-test)))
+(maintainers 
+"fred@tarides.com"
+"eli.jambu@gmail.com"
+)
 
 (package
  (name nottui)
@@ -39,8 +33,6 @@
    (>= 0.2))
   (cbor :with-test) ; for the examples
   (containers :with-test)))
-
-; for the examples
 
 (package
  (name nottui-pretty)
