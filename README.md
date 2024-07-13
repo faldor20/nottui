@@ -1,15 +1,14 @@
 Nottui is a toolkit for making terminal user-interfaces.
-It builds upon [Notty](https://github.com/pqwy/notty/), adding a layout DSL and support for event dispatch. It uses [Lwd](https://github.com/let-def/lwd) for interactivity.
+It builds upon [Notty](https://github.com/pqwy/notty/), adding a layout DSL and support for event dispatch.   
+It uses [Lwd](https://github.com/let-def/lwd) for interactivity.
 
 # Getting started
 
 The package is distributed through opam: 
 
-```ocaml
+```bash
 $ opam install nottui
 ```
-
-you might want to 
 
 ## Tutorial
 There is a tutorial for nottui which will take you through the basics of making a small application, it covers: 
@@ -19,7 +18,8 @@ There is a tutorial for nottui which will take you through the basics of making 
 - and much more!
 
 See [tutorial](/docs/tutorial/hackernews/bin/tutorial.md)
-
+## Docs
+For more details on how to write Nottui applications and how Nottui works see the [docs](docs/)
 ## Examples
 
 Here are a few examples to being using Nottui
@@ -89,7 +89,3 @@ let rec fake_fs () = [
 ] in
 Ui_loop.run (forest_ui (fake_fs ()));;
 ```
-
-# Layout DSL
-
-TODO: give intuition on Layout DSL 

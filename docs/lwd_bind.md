@@ -9,7 +9,7 @@ Full Recomputation: The most significant issue with `let$*` is that it causes th
 
 Less clear dependencies: Combining all `lwd.var`s in one place using `let$` and `and$` makes it more easy to see what will cause a recomputation.
 
-Example of Inefficient Use
+## Example of Inefficient Use
 Consider this example:
 ```ocaml
 let inefficient_ui =
@@ -24,7 +24,7 @@ let inefficient_ui =
 ```
 In this case, the entire UI will be recomputed whenever `counter`, `name_var`, or `item_list` changes, even if only one of them has actually been updated.
 
-Efficient Alternative
+## Efficient Alternative
 A more efficient approach would be:
 ```ocaml
 let efficient_ui =
@@ -40,19 +40,21 @@ let efficient_ui =
 
 This version ensures that each part of the UI is only recomputed when its specific dependencies change.
 
-When to Use `let$*`
+## When to Use `let$*`
 Despite these cautions, there are legitimate uses for `let$*`:
 
-Conditional UI Logic: When you need to make decisions about UI structure based on reactive values.
-Complex Transformations: For operations that genuinely require nested reactive computations.
-Example of appropriate use:
+- Conditional UI Logic: When you need to make decisions about UI structure based on reactive values.
+- Complex Transformations: For operations that genuinely require nested reactive computations.
+An example of appropriate use:
 ```ocaml
 let conditional_ui =
   let$* count = Lwd.get counter in
   if count > 10 then
+    (* Think of this as a standin for a more complex ui that is reactive*)
     let$ message = Lwd.return "Count is high!" in
     Nottui_widgets.printf "%s" message
   else
+    (* Think of this as a standin for a more complex ui that is reactive*)
     let$ message = Lwd.return "Count is low." in
     Nottui_widgets.printf "%s" message
 ```
