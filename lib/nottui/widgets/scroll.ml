@@ -10,11 +10,9 @@ module Internal = struct
   type scroll_state =
     { position : int
     ; bound : int
-    ; visible : int
-    ; total : int
     }
 
-  let default_scroll_state = { position = 0; bound = 0; visible = 0; total = 0 }
+  let default_scroll_state = { position = 0; bound = 0 }
 
   (** Primative for implementing scrolling, should be avoided unless you actually have reason to be changing the scroll state *)
   let vscroll_area_intern ~state ~change t =
@@ -61,14 +59,7 @@ module Internal = struct
           else false
         in
         if tchange || vchange
-        then
-          change
-            `Content
-            { state with
-              visible = !visible
-            ; total = !total
-            ; bound = maxi 0 (!total - !visible)
-            })
+        then change `Content { state with bound = maxi 0 (!total - !visible) })
       |> Ui.mouse_area (scroll_handler state)
       |> Ui.keyboard_area (focus_handler state)
       (*restore original max height*)
@@ -141,13 +132,7 @@ module Internal = struct
             else false
           in
           if tchange || vchange
-          then
-            Some
-              { state with
-                visible = !visible
-              ; total = !total
-              ; bound = maxi 0 (!total - !visible)
-              }
+          then Some { state with bound = maxi 0 (!total - !visible) }
           else None
         in
         let w_update = sense tw w state_w w_total w_visible in

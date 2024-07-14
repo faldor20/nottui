@@ -1,5 +1,3 @@
-module BB = Border_box
-module W = Nottui_widgets
 (** Shows the size of the ui provided. Useful for debugging*)
 val size_logger : Nottui_main.ui Lwd.t -> Nottui_main.ui Lwd.t
 
