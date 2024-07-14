@@ -1,6 +1,6 @@
 Nottui is a toolkit for making terminal user-interfaces.
-It builds upon [Notty](https://github.com/pqwy/notty/), adding a layout DSL and support for event dispatch.   
-It uses [Lwd](https://github.com/let-def/lwd) for interactivity.
+It builds upon [Notty](https://github.com/pqwy/notty/), adding a layout DSL and support for event dispatch,
+and [Lwd](https://github.com/let-def/lwd) which is used for interactivity.
 
 # Getting started
 
@@ -17,12 +17,14 @@ There is a tutorial for nottui which will take you through the basics of making 
 - handling keyboard input 
 - and much more!
 
-See [tutorial](/docs/tutorial/hackernews/bin/tutorial.md)
+See [tutorial](tutorial/hackernews/bin/tutorial.md)
 ## Docs
-For more details on how to write Nottui applications and how Nottui works see the [docs](docs/)
+For more details on how to write Nottui applications and how Nottui works see the [docs](docs/).
+I recommend reading at least [the fundimentals](docs/fundimentals.md).
 ## Examples
 
-Here are a few examples to being using Nottui
+Here are a few examples of using Nottui, more can be found in the [examples](examples/) folder:
+
 Let's start with Hello world.
 
 #### Hello world
@@ -30,7 +32,6 @@ Let's start with Hello world.
 ```ocaml
 #require "nottui";;
 open Nottui;;
-module W = Nottui_widgets;;
 
 Ui_loop.run (Lwd.pure (W.printf "Hello world"));;
 ```
