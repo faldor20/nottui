@@ -17,7 +17,8 @@ There is a tutorial for nottui which will take you through the basics of making 
 - handling keyboard input 
 - and much more!
 
-See [tutorial](tutorial/hackernews/bin/tutorial.md)
+See [tutorial](tutorial/hackernews/tutorial.md)
+
 ## Docs
 For more details on how to write Nottui applications and how Nottui works see the [docs](docs/).
 I recommend reading at least [the fundimentals](docs/fundimentals.md).

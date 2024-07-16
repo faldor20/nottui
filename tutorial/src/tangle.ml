@@ -1,3 +1,7 @@
+(** This is a system for templating code into markdown files for building tutorials. It's a little like literate programming but in reverse.
+    The code has lines with comments that indicate the start and end of a templated section. ($#S10 $#E10)
+    The markdown has lines that show where those sections should go ($#10) *)
+
 open Printf
 
 type code_block =
@@ -46,8 +50,7 @@ module Parsing = struct
   let parse_fold =
     string "$#" *> parse_number
     <* string " fold "
-    >>= fun n ->
-    take_while1 Char.(fun c -> c <> '\n') >>| fun name -> Fold (n, name)
+    >>= fun n -> take_while1 Char.(fun c -> c <> '\n') >>| fun name -> Fold (n, name)
   ;;
 
   (* Combine all parsers *)
@@ -160,12 +163,12 @@ let process_markdown filename (code_blocks : (int, code_block) Hashtbl.t) =
   |> Iter.concat_str
 ;;
 
-let process_folder path =
-  let files = Stdlib.Sys.readdir path |> Array.to_list in
+let process_folder input_path output_path =
+  let files = Stdlib.Sys.readdir input_path |> Array.to_list in
   let code_files =
     files
     |> List.filter_map ~f:(fun f ->
-      let path = Stdlib.Filename.concat path f in
+      let path = Stdlib.Filename.concat input_path f in
       if (not (Stdlib.Filename.check_suffix f ".md"))
          && not (Stdlib.Sys.is_directory path)
       then Some path
@@ -182,10 +185,16 @@ let process_folder path =
   in
   markdown_files
   |> List.iter ~f:(fun f ->
-    let input_file = Stdlib.Filename.concat path f in
-    let out_path = path ^ Stdlib.Filename.dir_sep ^ "tangled" in
-    if not (Stdlib.Sys.file_exists out_path) then Stdlib.Sys.mkdir out_path 0o755;
-    let output_file = Stdlib.Filename.concat out_path ("tangled_" ^ f) in
+    let input_file = Stdlib.Filename.concat input_path f in
+    let output_file =
+      let out_path =
+        Option.value
+          output_path
+          ~default:(input_path ^ Stdlib.Filename.dir_sep ^ "tangled")
+      in
+      if not (Stdlib.Sys.file_exists out_path) then Stdlib.Sys.mkdir out_path 0o755;
+      Stdlib.Filename.concat out_path f
+    in
     let processed_content = process_markdown input_file code_blocks in
     write_file output_file processed_content;
     printf "Processed %s -> %s\n" input_file output_file)
@@ -193,11 +202,14 @@ let process_folder path =
 
 let () =
   let open Stdlib in
-  if Array.length Sys.argv < 2
-  then printf "Usage: %s <folder_path>\n" Sys.argv.(0)
-  else (
-    let folder_path = Sys.argv.(1) in
-    if Sys.is_directory folder_path
-    then process_folder folder_path
-    else printf "Error: %s is not a valid directory\n" folder_path)
+  match Array.to_list Sys.argv with
+  | [ _; input_path ] ->
+    if Sys.is_directory input_path
+    then process_folder input_path None
+    else printf "Error: %s is not a valid directory\n" input_path
+  | [ _; input_path; output_path ] ->
+    if Sys.is_directory input_path
+    then process_folder input_path (Some output_path)
+    else printf "Error: %s is not a valid directory\n" input_path
+  | _ -> printf "Usage: %s <input_folder_path> [output_folder_path]\n" Sys.argv.(0)
 ;;
