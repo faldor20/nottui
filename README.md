@@ -2,6 +2,8 @@ Nottui is a toolkit for making terminal user-interfaces.
 It builds upon [Notty](https://github.com/pqwy/notty/), adding a layout DSL and support for event dispatch,
 and [Lwd](https://github.com/let-def/lwd) which is used for interactivity.
 
+**This repo is forked from [Lwd](https://github.com/let-def/lwd) I'd like to get it reintegrated with that at some point, I'm just waiting until let-def has a little more time on his plate**
+
 # Getting started
 
 The package is distributed through opam: 
