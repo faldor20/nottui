@@ -55,9 +55,9 @@ end = struct
 
   let clock = ref 0
 
-    let currently_focused:var ref= ref (make()|>fst)
+  let currently_focused:var ref= ref (make()|>fst)
 
-    let focus_stack:var Stack.t= Stack.create()
+  let focus_stack:var Stack.t= Stack.create()
 
   let request_var (v : var) =
     incr clock;

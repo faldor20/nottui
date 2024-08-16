@@ -45,7 +45,8 @@ module Focus : sig
       - the result can evolve over time, parties can join or leave, or bid
         "more". *)
 
-  (** Request the focus and add to the focus stack *)
+  (** Request the focus and add to the focus stack. 
+  WARNING: The focus stack is global, if you render multiple nottui ui's you may not want to use this *)
   val request_reversable : handle -> unit
 
   (** Release the focus (if the handle has it) and restore the last focus on the stack *)
