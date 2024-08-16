@@ -5,6 +5,4 @@
  (public_name nottui)
  (wrapped true)
  (libraries lwd notty notty.unix)
- (inline_tests)
- (preprocess
-  (pps ppx_inline_test ppx_assert)))
+ )

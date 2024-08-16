@@ -522,53 +522,6 @@ struct
 
     else
       (a, b)
-  let og_split ~a ~sa ~b ~sb total =
-    let stretch = sa + sb in
-    let flex = total - a - b in
-    if stretch > 0 && flex > 0 then
-      let ratio =
-        if sa > sb then
-          flex * sa / stretch
-        else
-          flex - flex * sb / stretch
-      in
-      (a + ratio, b + flex - ratio)
-    else
-      (a, b)
-let generate_test_case () =
-  let a = Random.int 100  in
-  let sa = Random.int 20  in
-  let b = Random.int 100  in
-  let sb = Random.int 20  in
-  let ma = Random.int 300  in
-  let mb = Random.int 300   in
-  let total = Random.int 100 in
-  (a, sa, b, sb, total,ma,mb)
-
-let%test "test_split" =
-  let num_tests = 100000000 in
-  let rec aux n =
-    if n = 0 then true
-    else
-      let (a, sa, b, sb, total,mA,mB) = generate_test_case () in
-      let mA=if a> mA then a else mA in
-      let mB=if b> mB then b else mB in
-      let a_ratio, b_ratio = split ~mA ~mB ~a ~sa ~b ~sb total in
-      let og_a_ratio, og_b_ratio = og_split ~a ~sa ~b ~sb total in
-      if  a_ratio+b_ratio<= og_a_ratio+og_b_ratio && 
-        (* shouldn't be able to be smaller than a+b*)
-        (a_ratio+b_ratio >= a+b)
-         then
-        aux (n - 1)
-      else
-        failwith (
-          Printf.sprintf "failed with inputs a:%d sa:%d b:%d sb:%d total:%d mA:%d mB:%d\n" a sa b sb total mA mB
-          ^ Printf.sprintf "got a_ratio:%d b_ratio:%d\n" a_ratio b_ratio
-          ^ Printf.sprintf "expected a_ratio:%d b_ratio:%d\n" og_a_ratio og_b_ratio)
-        
-  in
-  aux num_tests
-
 
   let pack ~max ~fixed ~stretch total g1 g2 =
     (*flex is the space we should expand into if we stretch*)

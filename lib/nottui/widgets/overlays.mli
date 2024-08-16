@@ -32,14 +32,14 @@ val text_prompt :
   show_prompt_var:text_prompt_data option Lwd.var ->
   Nottui_main.ui Lwd.t -> Nottui_main.ui Lwd.t
 
-  (** Config for a selection_list_prompt*)
+(** Config for a selection_list_prompt*)
 type 'a selection_list_prompt_data = {
   label : string;
   items : 'a Selection_list.selectable_item list Lwd.t;
   on_exit : [ `Closed | `Finished of 'a ] -> unit;
 }
-(** Selection_list prompt.
 
+(** Selection_list prompt.
 
 This will display ontop of any ui it is passed when show_prompt_var is [Some].
 @param modify_body Function that takes the completed body of the prompt, incase you want to resize it or otherwise change it 
