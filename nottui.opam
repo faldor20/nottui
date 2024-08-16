@@ -31,5 +31,5 @@ build: [
 ]
 dev-repo: "git+https://github.com/flador20/nottui.git"
 pin-depends: [
-["lwd" "git+https://github.com/faldor20/lwd#a150ef22ecb60d842e45a377fec233826a06b221"]
+["lwd.dev" "git+https://github.com/faldor20/lwd#c19bc2fd55c2de977cdd283458ce06402b08febe"]
 ]
