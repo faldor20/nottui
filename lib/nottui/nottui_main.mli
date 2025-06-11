@@ -36,6 +36,8 @@ module Focus : sig
   (** Check if this [status] corresponds to an active focus *)
   val has_focus : status -> bool
 
+  (** EXPERIMENTAL: Check if the handle is focused.*)
+  val peek_has_focus : handle -> bool
   (** TODO
       This implements a more general concept of "reactive auction":
 
@@ -45,8 +47,10 @@ module Focus : sig
       - the result can evolve over time, parties can join or leave, or bid
         "more". *)
 
-  (** Request the focus and add to the focus stack. 
-  WARNING: The focus stack is global, if you render multiple nottui ui's you may not want to use this *)
+  (** Request the focus and add to the focus stack.
+      WARNING: The focus stack is global, if you render multiple nottui ui's you may not want to use this
+      NOTE: Calling this twice has the same result as calling it once. Trying to focus the currently focused item will not add to the stack*)
+
   val request_reversable : handle -> unit
 
   (** Release the focus (if the handle has it) and restore the last focus on the stack *)
@@ -184,17 +188,19 @@ module Ui : sig
       Copy and paste, as well as focus movements. *)
   type semantic_key =
     [ (* Clipboard *)
-      `Copy
+        `Copy
     | `Paste
     | (* Focus management *)
-      `Focus of
-      [ `Out | `Next | `Prev | `Left | `Right | `Up | `Down ]
+      `Focus of [ `Out | `Next | `Prev | `Left | `Right | `Up | `Down ]
     ]
 
   (** A key is the pair of a main key and a list of modifiers *)
   type key =
     [ Unescape.special | `Uchar of Uchar.t | `ASCII of char | semantic_key ]
     * Unescape.mods
+
+  (** Pretty print a key *)
+  val pp_key : Format.formatter -> key -> unit
 
   (** An event is propagated until it gets handled.
       Handler functions return a value of type [may_handle] to indicate
@@ -371,6 +377,7 @@ module Ui_loop : sig
     :  ?process_event:bool
     -> ?timeout:float
     -> renderer:Renderer.t
+    -> cache: image option ref
     -> Term.t
     -> ui Lwd.root
     -> unit
@@ -387,7 +394,8 @@ module Ui_loop : sig
       To simulate concurrency in a polling fashion, tick function and period
       can be provided. Use the [Lwt] backend for real concurrency. *)
   val run
-    :  ?tick_period:float
+    :  ?on_invalidate:(ui -> unit)
+    -> ?tick_period:float
     -> ?tick:(unit -> unit)
     -> ?term:Term.t
     -> ?renderer:Renderer.t
@@ -396,4 +404,76 @@ module Ui_loop : sig
     -> ?quit_on_ctrl_q:bool
     -> ui Lwd.t
     -> unit
+
+  module Internal : sig
+    (** Provides slightly more powerful interfaces as compared to the Ui_llop module. 
+    
+    Allows you to override the step/ await_read function. 
+    
+    This should allow you to implement your own concurrency framework and modify how stepping is done. *)
+
+    type step =
+      ?process_event:bool
+      -> ?timeout:float
+      -> renderer:Renderer.t
+    -> cache: image option ref
+      -> Term.t
+      -> ui Lwd.root
+      -> unit
+
+    val await_read_unix : Unix.file_descr -> float -> [ `NotReady | `Ready | `LwdStateUpdate]
+
+    (** Run one step of the main loop.
+
+        Update output image describe by the provided [root].
+        If [process_event], wait up to [timeout] seconds for an input event, then
+        consume and dispatch it.
+
+        [?await_read]- A function that waits for the file handle to be ready for reading for up to the provided timeout (-1.0 for no timeout). This exists entirely so this waiting can be overriden to interoperate with an effects based async system. *)
+    val step
+      :  ?await_read:(Unix.file_descr -> float -> [ `Ready | `NotReady | `LwdStateUpdate ])
+      -> ?process_event:bool
+      -> ?timeout:float
+      -> renderer:Renderer.t
+    -> cache: image option ref
+      -> Term.t
+      -> ui Lwd.root
+      -> unit
+
+    type run_with_term_intern =
+      step:step
+      -> Term.t
+      -> ?on_invalidate:(ui -> unit)
+      -> ?tick_period:float
+      -> ?tick:(unit -> unit)
+      -> renderer:Renderer.t
+      -> bool Lwd.var
+      -> ui Lwd.t
+      -> unit
+
+    type run_with_term =
+      Term.t
+      -> ?on_invalidate:(ui -> unit)
+      -> ?tick_period:float
+      -> ?tick:(unit -> unit)
+      -> renderer:Renderer.t
+      -> bool Lwd.var
+      -> ui Lwd.t
+      -> unit
+
+    val run_with_term : run_with_term_intern
+
+    val run
+      :  run_with_term:run_with_term
+      -> ?on_invalidate:(ui -> unit)
+      -> ?tick_period:float
+      -> ?tick:(unit -> unit)
+      -> ?term:Term.t
+      -> ?renderer:Renderer.t
+      -> ?quit:bool Lwd.var
+      -> ?quit_on_escape:bool
+      -> ?quit_on_ctrl_q:bool
+      -> ui Lwd.t
+      -> unit
+  end
 end

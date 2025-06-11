@@ -31,6 +31,8 @@
    (= :version))
   (notty
    (>= 0.2))
+  (logs
+   (>= 0.7.0))
   (cbor :with-test) ; for the examples
   (containers :with-test)))
 
@@ -50,6 +52,17 @@
  (documentation "https://let-def.github.io/lwd/doc")
  (depends
   lwt
+  (nottui
+   (= :version))
+  (notty
+   (>= 0.2))))
+
+(package
+ (name nottui_picos)
+ (synopsis "Run Nottui UIs using picos")
+ (documentation "https://let-def.github.io/lwd/doc")
+ (depends
+  (picos(>= 0.6.0))
   (nottui
    (= :version))
   (notty

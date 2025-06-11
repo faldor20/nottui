@@ -111,7 +111,7 @@ let edit_field ?(focus = Focus.make ()) state ~on_change ~on_submit =
       @@
       if Focus.has_focus focus
       then (
-        let attr = attr_clickable in
+        let attr = A.(st italic) in
         let len = String.length text in
         (if pos >= len
          then [ I.string attr text ]
@@ -119,10 +119,10 @@ let edit_field ?(focus = Focus.make ()) state ~on_change ~on_submit =
         @
         if pos < String.length text
         then
-          [ I.string A.(bg lightred) (sub' text pos 1)
+          [ I.string A.(bg lightblue ++ fg black ++attr ++ st bold ) (sub' text pos 1)
           ; I.string attr (sub' text (pos + 1) (len - pos - 1))
           ]
-        else [ I.string A.(bg lightred) " " ])
+        else [ I.string A.(bg lightblue ++ fg black) " " ])
       else [ I.string A.(st underline) (if text = "" then " " else text) ]
     in
     let handler = function
