@@ -82,8 +82,7 @@ end = struct
   let request ((v, _) : handle) = Mutex.protect focusLock @@ fun _ -> request_var v
 
   let release ((v, _) : handle) =
-    Mutex.protect focusLock
-    @@ fun _ ->
+    Mutex.protect focusLock @@ fun _ ->
     incr clock;
     Lwd.set v 0
   ;;
@@ -91,8 +90,7 @@ end = struct
   let var_equal a b = Lwd.peek a = Lwd.peek b
 
   let request_reversable ((v, _) : handle) =
-    Mutex.protect focusLock
-    @@ fun _ ->
+    Mutex.protect focusLock @@ fun _ ->
     Log.debug (fun m -> m "Maybe requesting reversable focus %d" (Lwd.peek v));
     if not @@ var_equal !currently_focused v
     then (

@@ -34,7 +34,7 @@ module Ui_loop = struct
           ; It.invalidated_evt invalidation_tracker
             |> Event.map (fun _ -> `LwdStateUpdate)
           ]
-       in
+      in
       ret
     in
     select ()
