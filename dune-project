@@ -27,6 +27,8 @@
    (>= 0.2))
   (logs
    (>= 0.8.0))
+  (signal
+   (>= 0.4.0))
   (cbor :with-test) ; for the examples
   (containers :with-test)))
 
