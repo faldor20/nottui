@@ -60,6 +60,10 @@
  (depends
   (picos
    (>= 0.6.0))
+  (picos_io
+   (>= 0.6.0))
+  (picos_std
+   (>= 0.6.0))
   (logs
    (>= 0.8.0))
   (lwd_picos
