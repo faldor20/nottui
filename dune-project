@@ -12,15 +12,9 @@
 
 (license MIT)
 
-(authors 
-"Frédéric Bour"
-"Eli Dowling"
-)
+(authors "Frédéric Bour" "Eli Dowling")
 
-(maintainers 
-"fred@tarides.com"
-"eli.jambu@gmail.com"
-)
+(maintainers "fred@tarides.com" "eli.jambu@gmail.com")
 
 (package
  (name nottui)
@@ -32,7 +26,7 @@
   (notty
    (>= 0.2))
   (logs
-   (>= 0.7.0))
+   (>= 0.8.0))
   (cbor :with-test) ; for the examples
   (containers :with-test)))
 
@@ -62,7 +56,10 @@
  (synopsis "Run Nottui UIs using picos")
  (documentation "https://let-def.github.io/lwd/doc")
  (depends
-  (picos(>= 0.6.0))
+  (picos
+   (>= 0.6.0))
+  (logs
+   (>= 0.8.0))
   (lwd_picos
    (= :version))
   (nottui
